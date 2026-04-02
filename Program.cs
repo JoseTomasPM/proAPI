@@ -71,14 +71,27 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddCors(opt =>
-    opt.AddDefaultPolicy(p =>
-        p.WithOrigins("http://localhost:5173") // puerto de Vite
+{
+    opt.AddPolicy("frontend", p =>
+        p.WithOrigins("https://TU-APP.vercel.app")
          .AllowAnyHeader()
-         .AllowAnyMethod()));
-
+         .AllowAnyMethod());
+});
 var app = builder.Build();
 
-// ─── Middleware Pipeline ─────────────────────────────────
+// DB test
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.OpenConnection();
+    db.Database.CloseConnection();
+    Console.WriteLine("😸 Connected to DB");
+}
+
+app.UseCors("frontend");
+
+
+// ─── Middleware Pipeline ────
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors();
 
@@ -87,12 +100,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/", "ProfessionalAPI v1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProfessionalAPI v1");
         c.RoutePrefix = string.Empty;
     });
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
@@ -104,5 +117,8 @@ if (app.Environment.IsDevelopment())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{port}");
 
 app.Run();
