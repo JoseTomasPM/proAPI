@@ -6,9 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="Dockerfile" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Remove="Dockerfile" />
+		<None Include="Dockerfile" />
+	</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />

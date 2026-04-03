@@ -23,7 +23,8 @@
 # intervention with every merge. To do so, just uncomment the entries below
 ###############################################################################
 #*.sln       merge=binary
-#*.csproj    merge=binary
+#*
+merge=binary
 #*.vbproj    merge=binary
 #*.vcxproj   merge=binary
 #*.vcproj    merge=binary
